@@ -10,17 +10,23 @@ default: &default
   pool: 5
   timeout: 5000
 
-development:
+local: &local
   <<: *default
+  host: localhost
+  port: 5432
+  username: postgres
+  password: 1234
+
+development:
+  <<: *local
   database: gmg-rails-api-dev
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
+  <<: *local
   database: gmg-rails-api-test
 
 production:
-  encoding: unicode
-  pool: 5
+  <<: *default
