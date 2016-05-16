@@ -1,16 +1,28 @@
 class UserController < ApplicationController
-  before_filter :parse_request, only: [:create]
-  skip_before_filter :verify_authenticity_token, only: :create
+  before_filter :parse_request, only: [:create, :login]
+  skip_before_filter :verify_authenticity_token, only: [:create, :login]
 
   def show
     @user = User.find_by_id params[:id]
     render json: Oj.dump(@user, mode: :compat, indent: 2)
   end
 
-  def all
-    render json: Oj.dump(User.all, mode: :compat)
+  def login
+    @user = User.find_by_email @json[:email]    
+    
+    if @user.nil?
+      render json: Oj.dump(message: "incorrect email"), status: 401    
+    elsif @user.authenticate(@json[:password])
+      render json: Oj.dump(@user, mode: :compat, indent: 2)
+    else
+      render json: Oj.dump(message: "incorrect password"), status: 401
+    end
   end
 
+  def list
+    render json: Oj.dump(User.all, mode: :compat, indent: 2)
+  end
+ 
   def create
     @user = User.new
     @user.assign_attributes(@json)
