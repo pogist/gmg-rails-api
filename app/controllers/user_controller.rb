@@ -7,6 +7,10 @@ class UserController < ApplicationController
     render json: Oj.dump(@user, mode: :compat, indent: 2)
   end
 
+  def all
+    render json: Oj.dump(User.all, mode: :compat)
+  end
+
   def create
     @user = User.new
     @user.assign_attributes(@json)
